@@ -1,0 +1,82 @@
+defaults:  
+  - _self_
+  - override hydra/hydra_logging: disabled
+  - override hydra/job_logging: disabled
+
+#! DO NOT CHANGE
+hydra:
+  output_subdir: null
+  verbose: true
+
+# Environment variables
+env:
+    omp_num_threads: 2
+    tf_inter_op_parallelism_threads: 1
+    tf_intra_op_parallelism_threads: 6
+
+slurm:
+    job_name: autotools-branch
+    partition: Tristan21
+    time: 24:00:00
+    nodes: 1
+    ntasks: 8
+
+# For now, only one calculator at a time is supported
+calculators:
+    dp:
+        use: true
+        models:
+            - examples/POTENTIALS/ZrO2_11_1-compressed.pb
+        structures:
+            - examples/STRUCT/data.CUBIC
+        compare_with: ../DFT    # path to other calculations root (set to null if not needed)
+        settings:
+            steps: 10000
+            ftol: 1e-10
+            symprec: 1e-5
+
+    vasp:
+        use: false
+        structures:
+            - examples//DFT/RELAX/CUBIC/POSCAR
+        compare_with: ../ZrO2_11_1-compressed    # path to other calculations root folder (set to null if not needed)
+        settings:
+            relax_incar: examples/DFT/RELAX/CUBIC/INCAR
+            static_incar: examples/DFT/RELAX/CUBIC/INCAR
+            potcar: examples/DFT/RELAX/CUBIC/POTCAR
+            kpoints: examples/DFT/RELAX/CUBIC/KPOINTS # set to null if not needed
+        command: mpirun -np 8 vasp_std
+
+
+calculations:
+    # Minimize the structure
+    relax:
+        run: true
+        relax_box: true
+
+    # Static calculation to get lattice parameters and energy at 0K
+    lattice:
+        run: false
+
+    eos:
+        run: false
+        compare_with: ../DFT/EOS
+
+        points: 20
+        deformation: 0.05
+
+    # Elastic tensor at 0K
+    elastic:
+        run: false
+        compare_with: ../DFT/ELASTIC
+
+        deformation: 0.0015
+
+    # phonon spectrum at 0K
+    phonon:
+        run: true
+        compare_with: ../DFT/PHONON
+
+        dimensions: [3 3 3]
+        displacement: 0.01
+        kpath: null

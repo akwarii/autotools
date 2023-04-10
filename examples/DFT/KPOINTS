@@ -1,0 +1,6 @@
+Automatic Mesh    #Comment line
+0                 #Automatic generation
+Monkhorst-Pack    #Generation method
+4  4  4           # 4 k-points on kx ... 4x4x4 kpoints
+0. 0. 0.
+

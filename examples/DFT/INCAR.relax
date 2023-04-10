@@ -1,0 +1,24 @@
+SYSTEM = ZrO2
+
+    GGA    = PS 
+    EDIFF  = 1.0E-6
+    EDIFFG = -1.0E-4
+    PREC   = Accurate
+    ENCUT  = 900 eV
+
+    LREAL  = .FALSE.
+    LWAVE  = .FALSE.
+    LCHARG = .FALSE.
+
+    IBRION = 1
+    IALGO  = 38
+    POTIM  = 0.5
+    ISIF   = 3
+    
+    NSW    = 200
+    NELM   = 200
+    NELMIN = 5
+    NELMDL = -10
+
+    ISMEAR  = 0
+    SIGMA   = 0.05
